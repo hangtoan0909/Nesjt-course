@@ -6,6 +6,8 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
+  NotFoundException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -16,21 +18,23 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post('/signup')
-  createUser() {}
-
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  create(@Body() user: CreateUserDto) {
+    console.log(user);
+    return this.usersService.create(user);
   }
 
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  find(@Query('email') email: string) {
+    return this.usersService.find(email);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    const user = await this.usersService.findOne(+id);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
   }
 
   @Patch(':id')

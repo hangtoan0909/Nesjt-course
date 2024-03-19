@@ -8,6 +8,8 @@ import {
   Delete,
   Query,
   NotFoundException,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -27,7 +29,8 @@ export class UsersController {
   find(@Query('email') email: string) {
     return this.usersService.find(email);
   }
-
+  // chặn để k lấy thuộc tính exclude, ở đây là k get password
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const user = await this.usersService.findOne(+id);
